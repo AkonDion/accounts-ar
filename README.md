@@ -4,7 +4,7 @@
 
 Create a `.env.local` file with the following variables:
 
-```bash
+\`\`\`bash
 # Zoho FSM OAuth Credentials
 ZOHO_FSM_CLIENT_ID=<your-client-id>
 ZOHO_FSM_CLIENT_SECRET=<your-client-secret>
@@ -22,19 +22,19 @@ QBO_BASE_URL=https://quickbooks.api.intuit.com/v3/company/<your-realm-id>
 NEXT_PUBLIC_SUPABASE_URL=<your-supabase-url>
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
 SUPABASE_SERVICE_ROLE_KEY=<your-supabase-service-role-key>
-```
+\`\`\`
 
 ## Getting Started
 
 1. Install dependencies:
-```bash
+\`\`\`bash
 npm install
-```
+\`\`\`
 
 2. Run the development server:
-```bash
+\`\`\`bash
 npm run dev
-```
+\`\`\`
 
 3. Open [http://localhost:3000/ar](http://localhost:3000/ar) in your browser.
 
