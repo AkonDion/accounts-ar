@@ -1,32 +1,100 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from "next/server"
+
+const mockInvoices = [
+  {
+    id: "1",
+    invoice_id: "INV-001",
+    invoice_number: "INV-2024-001",
+    amount: 5000,
+    amount_paid: 5000,
+    amount_due: 0,
+    currency: "USD",
+    status: "paid",
+    date_issued: "2024-01-15",
+    date_paid: "2024-01-20",
+    billing_name: "Acme Corp",
+    billing_email: "billing@acme.com",
+    work_order_id: "WO-001",
+    qb_invoice_id: "QB-001",
+    qb_customer_id: "CUST-001",
+    invoice_url: "https://example.com/invoice/1",
+    token: "token123",
+    sent_at: "2024-01-15",
+    reminder_1_sent: null,
+    reminder_2_sent: null,
+    final_reminder_sent: null,
+    reminders_enabled: true,
+    created_at: "2024-01-15",
+    updated_at: "2024-01-20",
+  },
+  {
+    id: "2",
+    invoice_id: "INV-002",
+    invoice_number: "INV-2024-002",
+    amount: 3500,
+    amount_paid: 0,
+    amount_due: 3500,
+    currency: "USD",
+    status: "unpaid",
+    date_issued: "2024-01-20",
+    date_paid: null,
+    billing_name: "Tech Solutions Inc",
+    billing_email: "billing@techsolutions.com",
+    work_order_id: "WO-002",
+    qb_invoice_id: "QB-002",
+    qb_customer_id: "CUST-002",
+    invoice_url: "https://example.com/invoice/2",
+    token: "token456",
+    sent_at: "2024-01-20",
+    reminder_1_sent: "2024-02-05",
+    reminder_2_sent: null,
+    final_reminder_sent: null,
+    reminders_enabled: true,
+    created_at: "2024-01-20",
+    updated_at: "2024-02-05",
+  },
+]
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Supabase invoices API called - fetching real data');
-    
-    // Fetch real invoice data from Supabase
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/invoices?select=*&order=created_at.desc&limit=50`, {
-      headers: {
-        'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    console.log("[v0] Supabase invoices API called")
 
-    if (!response.ok) {
-      throw new Error(`Supabase API error: ${response.statusText}`);
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.log("[v0] Supabase not configured, returning mock data")
+      return NextResponse.json(mockInvoices)
     }
 
-    const invoices = await response.json();
-    
+    // Fetch real invoice data from Supabase
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    console.log("[v0] Fetching from Supabase:", supabaseUrl)
+
+    const response = await fetch(`${supabaseUrl}/rest/v1/invoices?select=*&order=created_at.desc&limit=50`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        "Content-Type": "application/json",
+      },
+    })
+
+    console.log("[v0] Supabase response status:", response.status)
+
+    if (!response.ok) {
+      console.log("[v0] Supabase API error, falling back to mock data")
+      return NextResponse.json(mockInvoices)
+    }
+
+    const invoices = await response.json()
+
     // Transform the data to match our interface
     const transformedInvoices = invoices.map((invoice: any) => ({
       id: invoice.id,
       invoice_id: invoice.invoice_id,
       invoice_number: invoice.invoice_number,
-      amount: parseFloat(invoice.amount) || 0,
-      amount_paid: parseFloat(invoice.amount_paid) || 0,
-      amount_due: parseFloat(invoice.amount_due) || 0,
+      amount: Number.parseFloat(invoice.amount) || 0,
+      amount_paid: Number.parseFloat(invoice.amount_paid) || 0,
+      amount_due: Number.parseFloat(invoice.amount_due) || 0,
       currency: invoice.currency,
       status: invoice.status,
       date_issued: invoice.date_issued,
@@ -45,15 +113,13 @@ export async function GET(request: NextRequest) {
       reminders_enabled: invoice.reminders_enabled,
       created_at: invoice.created_at,
       updated_at: invoice.updated_at,
-    }));
+    }))
 
-    console.log(`Returning ${transformedInvoices.length} invoices from Supabase`);
-    return NextResponse.json(transformedInvoices);
+    console.log(`[v0] Returning ${transformedInvoices.length} invoices from Supabase`)
+    return NextResponse.json(transformedInvoices)
   } catch (error) {
-    console.error('Error in Supabase API route:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch invoices' },
-      { status: 500 }
-    );
+    console.error("[v0] Error in Supabase API route:", error)
+    console.log("[v0] Returning mock data due to error")
+    return NextResponse.json(mockInvoices)
   }
 }

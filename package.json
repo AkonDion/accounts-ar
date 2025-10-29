@@ -11,13 +11,15 @@
   "dependencies": {
     "@radix-ui/react-slot": "latest",
     "@radix-ui/react-tabs": "latest",
+    "@tailwindcss/container-queries": "latest",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "geist": "latest",
+    "geist": "1.5.1",
     "lucide-react": "^0.454.0",
     "next": "14.0.0",
     "react": "^18",
     "react-dom": "^18",
+    "recharts": "latest",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7"
   },
